@@ -31,8 +31,6 @@ public class NuberDispatch
      */
     Map<String,NuberRegion> regions = new HashMap<String,NuberRegion>();
 
-    Map<String, Integer> regionInfo;
-
     /**
      * Creates a new dispatch objects and instantiates the required regions and any other objects required.
      * It should be able to handle a variable number of regions based on the HashMap provided.
@@ -42,9 +40,8 @@ public class NuberDispatch
      */
     public NuberDispatch(HashMap<String, Integer> regionInfo, boolean logEvents)
     {
-        this.regionInfo = regionInfo;
         this.logEvents = logEvents;
-        addRegions();
+        addRegions(regionInfo);
     }
 
     /**
@@ -110,7 +107,12 @@ public class NuberDispatch
      */
     public Future<BookingResult> bookPassenger(Passenger passenger, String region)
     {
-        return null;
+        if(!regions.containsKey(region))
+        {
+            return null;
+        }
+
+        return regions.get(region).bookPassenger(passenger);
     }
 
     /**
@@ -125,8 +127,10 @@ public class NuberDispatch
         return  0;
     }
 
-
-    private void addRegions()
+    /**
+     * Populates the regions map with regions
+     */
+    private void addRegions(Map<String,Integer> regionInfo)
     {
         for(String key : regionInfo.keySet())
         {

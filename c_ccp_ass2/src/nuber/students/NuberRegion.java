@@ -1,6 +1,6 @@
 package nuber.students;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * A single Nuber region that operates independently of other regions, other than getting
@@ -25,6 +25,10 @@ public class NuberRegion
 
     private int maxSimultaneousJobs;
 
+    private ExecutorService threadPool;
+
+    private final int CORE_SIZE = 3;
+    private final int LIFETIME = 5;
 
     /**
      * Creates a new Nuber region
@@ -38,6 +42,12 @@ public class NuberRegion
         this.dispatch = dispatch;
         this.regionName = regionName;
         this.maxSimultaneousJobs = maxSimultaneousJobs;
+        threadPool = new ThreadPoolExecutor(
+                CORE_SIZE,
+                maxSimultaneousJobs,
+                LIFETIME,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<Runnable>(maxSimultaneousJobs));
     }
 
     /**
@@ -61,6 +71,7 @@ public class NuberRegion
      */
     public void shutdown()
     {
+        threadPool.shutdown();
     }
 
 }

@@ -6,7 +6,10 @@ import static nuber.strtk001_utilities.Utility.delay;
 
 public class Driver extends Person
 {
-    //The current passenger
+    /**
+     * The current passenger
+     */
+
     private Passenger myPassenger;
 
     public Driver(String driverName, int maxSleep)
@@ -23,8 +26,10 @@ public class Driver extends Person
      */
     public void pickUpPassenger(Passenger newPassenger)
     {
+        System.out.println("This driver is picking up the passenger.");
         myPassenger = newPassenger;
         delay(maxSleep);
+        System.out.println("This driver has picking up the passenger.");
     }
 
     /**
@@ -35,7 +40,9 @@ public class Driver extends Person
      */
     public void driveToDestination()
     {
+        System.out.println("This driver is driving to dest.");
         delay(myPassenger.getTravelTime());
+        System.out.println("This driver has arrived at dest.");
     }
 
 }
