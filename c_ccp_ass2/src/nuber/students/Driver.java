@@ -1,17 +1,17 @@
 package nuber.students;
 
+
+
+import static nuber.strtk001_utilities.Utility.delay;
+
 public class Driver extends Person
 {
+    //The current passenger
     private Passenger myPassenger;
-
-    private String driverName;
-
-    private int maxSleep;
 
     public Driver(String driverName, int maxSleep)
     {
-        this.driverName = driverName;
-        this.maxSleep = maxSleep;
+        super(driverName, maxSleep);
     }
 
     /**
@@ -24,6 +24,7 @@ public class Driver extends Person
     public void pickUpPassenger(Passenger newPassenger)
     {
         myPassenger = newPassenger;
+        delay(maxSleep);
     }
 
     /**
@@ -32,7 +33,9 @@ public class Driver extends Person
      *
      * @throws InterruptedException
      */
-    public void driveToDestination() {
+    public void driveToDestination()
+    {
+        delay(myPassenger.getTravelTime());
     }
 
 }

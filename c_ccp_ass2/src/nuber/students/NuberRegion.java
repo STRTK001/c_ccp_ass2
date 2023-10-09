@@ -16,7 +16,14 @@ import java.util.concurrent.Future;
  * @author james
  *
  */
-public class NuberRegion {
+public class NuberRegion
+{
+
+    private NuberDispatch dispatch;
+
+    private String regionName;
+
+    private int maxSimultaneousJobs;
 
 
     /**
@@ -28,8 +35,9 @@ public class NuberRegion {
      */
     public NuberRegion(NuberDispatch dispatch, String regionName, int maxSimultaneousJobs)
     {
-
-
+        this.dispatch = dispatch;
+        this.regionName = regionName;
+        this.maxSimultaneousJobs = maxSimultaneousJobs;
     }
 
     /**

@@ -1,7 +1,9 @@
 package nuber.students;
 
+import javax.swing.plaf.synth.Region;
 import java.util.HashMap;
-import java.util.concurrent.Future;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * The core Dispatch class that instantiates and manages everything for Nuber
@@ -9,7 +11,8 @@ import java.util.concurrent.Future;
  * @author james
  *
  */
-public class NuberDispatch {
+public class NuberDispatch
+{
 
     /**
      * The maximum number of idle drivers that can be awaiting a booking
@@ -17,6 +20,18 @@ public class NuberDispatch {
     private final int MAX_DRIVERS = 999;
 
     private boolean logEvents = false;
+
+    /**
+     * The Queue of idle drivers
+     */
+    BlockingQueue<Driver> idleDrivers = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
+
+    /**
+     * Map to store reference to all regions so we can shut them down later.
+     */
+    Map<String,NuberRegion> regions = new HashMap<String,NuberRegion>();
+
+    Map<String, Integer> regionInfo;
 
     /**
      * Creates a new dispatch objects and instantiates the required regions and any other objects required.
@@ -27,6 +42,9 @@ public class NuberDispatch {
      */
     public NuberDispatch(HashMap<String, Integer> regionInfo, boolean logEvents)
     {
+        this.regionInfo = regionInfo;
+        this.logEvents = logEvents;
+        addRegions();
     }
 
     /**
@@ -34,12 +52,17 @@ public class NuberDispatch {
      *
      * Must be able to have drivers added from multiple threads.
      *
-     * @param The driver to add to the queue.
+     * @param newDriver The driver to add to the queue.
      * @return Returns true if driver was added to the queue
      */
-    public boolean addDriver(Driver newDriver)
+    public synchronized boolean addDriver(Driver newDriver)
     {
-        return false;
+        try {
+            idleDrivers.put(newDriver);
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 
     /**
@@ -49,9 +72,13 @@ public class NuberDispatch {
      *
      * @return A driver that has been removed from the queue
      */
-    public Driver getDriver()
+    public synchronized Driver getDriver()
     {
-        return null;
+        try {
+            return  idleDrivers.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -98,10 +125,30 @@ public class NuberDispatch {
         return  0;
     }
 
+
+    private void addRegions()
+    {
+        for(String key : regionInfo.keySet())
+        {
+            if(regions.containsKey(key))
+            {
+                continue;
+            }
+            NuberRegion region = new NuberRegion(this,key,regionInfo.get(key));
+            regions.put(key,region);
+        }
+    }
+
+
     /**
      * Tells all regions to finish existing bookings already allocated, and stop accepting new bookings
      */
-    public void shutdown() {
+    public void shutdown()
+    {
+        for(NuberRegion r : regions.values())
+        {
+            r.shutdown();
+        }
     }
 
 }
