@@ -63,7 +63,8 @@ public class NuberRegion
      */
     public Future<BookingResult> bookPassenger(Passenger waitingPassenger)
     {
-        return null;
+        Booking booking = new Booking(dispatch,waitingPassenger);
+        return threadPool.submit(booking);
     }
 
     /**

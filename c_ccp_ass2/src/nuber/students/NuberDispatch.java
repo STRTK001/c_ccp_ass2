@@ -105,8 +105,7 @@ public class NuberDispatch
      * @param region The region to book them into
      * @return returns a Future<BookingResult> object
      */
-    public Future<BookingResult> bookPassenger(Passenger passenger, String region)
-    {
+    public Future<BookingResult> bookPassenger(Passenger passenger, String region) throws ExecutionException, InterruptedException {
         if(!regions.containsKey(region))
         {
             return null;
@@ -122,7 +121,7 @@ public class NuberDispatch
      *
      * @return Number of bookings awaiting driver, across ALL regions
      */
-    public int getBookingsAwaitingDriver()
+    public int getBookingsAwaitingDriver() //need to implement
     {
         return  0;
     }

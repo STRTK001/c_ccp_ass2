@@ -22,8 +22,13 @@ import java.util.concurrent.Callable;
  */
 public class Booking implements Callable<BookingResult>
 {
+    private NuberDispatch dispatch;
+    private Passenger passenger;
 
+    private Driver driver;
 
+    private int bookingID;
+    private static int bookingInstances = 1;
     /**
      * Creates a new booking for a given Nuber dispatch and passenger, noting that no
      * driver is provided as it will depend on whether one is available when the region
@@ -34,6 +39,11 @@ public class Booking implements Callable<BookingResult>
      */
     public Booking(NuberDispatch dispatch, Passenger passenger)
     {
+        this.dispatch = dispatch;
+        this.passenger = passenger;
+        driver = null;
+        bookingID = bookingInstances;
+        bookingInstances++;
     }
 
     /**
@@ -54,7 +64,12 @@ public class Booking implements Callable<BookingResult>
      */
     public BookingResult call()
     {
-        return null;
+        driver = dispatch.getDriver();
+        driver.pickUpPassenger(passenger);
+        driver.driveToDestination();
+        dispatch.addDriver(driver);
+
+        return new BookingResult(bookingID,passenger,driver,1000);
     }
 
     /***
@@ -70,7 +85,7 @@ public class Booking implements Callable<BookingResult>
     @Override
     public String toString()
     {
-        return null;
+        return String.format("%d:%s:%s",bookingID,driver.name,passenger.name);
     }
 
 }
