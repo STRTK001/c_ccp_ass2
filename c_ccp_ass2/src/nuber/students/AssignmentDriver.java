@@ -46,15 +46,15 @@ public class AssignmentDriver {
 
         //test adding a driver to dispatch
         dispatch.addDriver(testDriver);
-
+        System.out.println("Test region: has " +region.getBookingQueueLength() + " bookings waiting right now at " + System.nanoTime());
         //test booking a single passenger
         dispatch.bookPassenger(testPassenger, "Test Region");
-
+        System.out.println("Test region: has " +region.getBookingQueueLength() + " bookings waiting right now at " + System.nanoTime());
         //shutdown the dispatch when it's done
         dispatch.shutdown();
 
 
-
+        System.out.println("Test region: has " +region.getBookingQueueLength() + " bookings waiting right now at " + System.nanoTime());
 
 
         //create NuberDispatch for given regions and max simultaneous jobs per region
@@ -64,7 +64,7 @@ public class AssignmentDriver {
         regions.put("North", 50);
         regions.put("South", 50);
 
-        //new Simulation(regions, 1, 10, 1000, logEvents);
+        new Simulation(regions, 1, 10, 1000, logEvents);
         //new Simulation(regions, 5, 10, 1000, logEvents);
         //new Simulation(regions, 10, 10, 1000, logEvents);
         //new Simulation(regions, 10, 100, 1000, logEvents);

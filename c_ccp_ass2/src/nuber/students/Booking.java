@@ -44,6 +44,7 @@ public class Booking implements Callable<BookingResult>
         driver = null;
         bookingID = bookingInstances;
         bookingInstances++;
+        System.out.println(this.toString() + ": has been created at " + System.nanoTime());
     }
 
     /**
@@ -64,11 +65,15 @@ public class Booking implements Callable<BookingResult>
      */
     public BookingResult call()
     {
+        System.out.println(this.toString() + ": Requesting driver at: " + System.nanoTime());
         driver = dispatch.getDriver();
+        System.out.println(this.toString() + ": should have driver now. at: " + System.nanoTime());
         driver.pickUpPassenger(passenger);
+        System.out.println(this.toString() + ": should have picked up the passenger now at: " + System.nanoTime());
         driver.driveToDestination();
+        System.out.println(this.toString() + ": should have dropped off the passenger now at: " + System.nanoTime());
         dispatch.addDriver(driver);
-
+        System.out.println(this.toString() + ": driver now has returned at: " + System.nanoTime());
         return new BookingResult(bookingID,passenger,driver,1000);
     }
 
@@ -85,7 +90,12 @@ public class Booking implements Callable<BookingResult>
     @Override
     public String toString()
     {
-        return String.format("%d:%s:%s",bookingID,driver.name,passenger.name);
+        String driverName = "null", passengerName = "null";
+        if(driver != null)
+            driverName = driver.name;
+        if(passenger != null)
+            passengerName = passenger.name;
+        return String.format("%d:%s:%s",bookingID,driverName,passengerName);
     }
 
 }

@@ -110,7 +110,7 @@ public class NuberDispatch
         {
             return null;
         }
-
+        System.out.println("Dispatch Booking Passenger: " +  passenger.name +" at " + System.nanoTime());
         return regions.get(region).bookPassenger(passenger);
     }
 
@@ -123,7 +123,12 @@ public class NuberDispatch
      */
     public int getBookingsAwaitingDriver() //need to implement
     {
-        return  0;
+        int bookingCount = 0;
+        for(NuberRegion region : regions.values())
+        {
+            bookingCount += region.getBookingQueueLength();
+        }
+        return bookingCount;
     }
 
     /**
@@ -137,6 +142,7 @@ public class NuberDispatch
             {
                 continue;
             }
+            System.out.println("ADDED REGION: <" + key +"> with max bookings of " + regionInfo.get(key)+" at: " + System.nanoTime());
             NuberRegion region = new NuberRegion(this,key,regionInfo.get(key));
             regions.put(key,region);
         }
@@ -148,9 +154,11 @@ public class NuberDispatch
      */
     public void shutdown()
     {
-        for(NuberRegion r : regions.values())
+        System.out.println("****  Initating shutdown at: " + System.nanoTime());
+        for(String key : regions.keySet())
         {
-            r.shutdown();
+            System.out.println("SHUTTINGDOWN: " + key + " at " + System.nanoTime());
+            regions.get(key).shutdown();
         }
     }
 

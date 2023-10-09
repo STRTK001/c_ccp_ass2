@@ -27,8 +27,10 @@ public class NuberRegion
 
     private ExecutorService threadPool;
 
-    private final int CORE_SIZE = 3;
-    private final int LIFETIME = 5;
+    private ArrayBlockingQueue<Runnable> bookingsQueue;
+
+    private final int CORE_SIZE = 0;
+    private final int LIFETIME = 10;
 
     /**
      * Creates a new Nuber region
@@ -42,12 +44,13 @@ public class NuberRegion
         this.dispatch = dispatch;
         this.regionName = regionName;
         this.maxSimultaneousJobs = maxSimultaneousJobs;
+        bookingsQueue = new ArrayBlockingQueue<Runnable>(maxSimultaneousJobs);
         threadPool = new ThreadPoolExecutor(
                 CORE_SIZE,
                 maxSimultaneousJobs,
                 LIFETIME,
                 TimeUnit.SECONDS,
-                new ArrayBlockingQueue<Runnable>(maxSimultaneousJobs));
+                bookingsQueue);
     }
 
     /**
@@ -63,9 +66,23 @@ public class NuberRegion
      */
     public Future<BookingResult> bookPassenger(Passenger waitingPassenger)
     {
-        Booking booking = new Booking(dispatch,waitingPassenger);
-        return threadPool.submit(booking);
+        try
+        {
+            Booking booking = new Booking(dispatch,waitingPassenger);
+            return threadPool.submit(booking);
+        }catch (Exception e)
+        {
+            System.out.println(" somethings gone to shit here "+ e + System.nanoTime());
+            return null;
+        }
     }
+
+    /**
+     * Getter method for retrieving the number of bookings waiting in queue.
+     *
+     * @return bookingQueue.Size()
+     */
+    public int getBookingQueueLength(){return bookingsQueue.size();}
 
     /**
      * Called by dispatch to tell the region to complete its existing bookings and stop accepting any new bookings
