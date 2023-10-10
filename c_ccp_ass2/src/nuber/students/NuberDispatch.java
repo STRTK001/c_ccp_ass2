@@ -13,24 +13,19 @@ import java.util.concurrent.*;
  */
 public class NuberDispatch
 {
-
     /**
      * The maximum number of idle drivers that can be awaiting a booking
      */
     private final int MAX_DRIVERS = 999;
-
     private boolean logEvents = false;
-
     /**
      * The Queue of idle drivers
      */
-    public BlockingQueue<Driver> idleDrivers = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
-
+    private BlockingQueue<Driver> idleDrivers = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
     /**
      * Map to store reference to all regions so we can shut them down later.
      */
-    public Map<String,NuberRegion> regions = new HashMap<String,NuberRegion>();
-
+    private Map<String,NuberRegion> regions = new HashMap<String,NuberRegion>();
     /**
      * Creates a new dispatch objects and instantiates the required regions and any other objects required.
      * It should be able to handle a variable number of regions based on the HashMap provided.
@@ -43,7 +38,6 @@ public class NuberDispatch
         this.logEvents = logEvents;
         addRegions(regionInfo);
     }
-
     /**
      * Adds drivers to a queue of idle driver.
      *
@@ -66,7 +60,6 @@ public class NuberDispatch
         notifyAll();
         return true;
     }
-
     /**
      * Gets a driver from the front of the queue
      *
@@ -80,14 +73,11 @@ public class NuberDispatch
         {
             try {
                 wait();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            } catch (InterruptedException e) {}
         }
         notifyAll();
         return idleDrivers.poll();
     }
-
     /**
      * Prints out the string
      * 	    booking + ": " + message
@@ -103,7 +93,6 @@ public class NuberDispatch
         System.out.println(booking + ": " + message);
 
     }
-
     /**
      * Books a given passenger into a given Nuber region.
      *
@@ -120,7 +109,6 @@ public class NuberDispatch
     {
         return regions.get(region).bookPassenger(passenger);
     }
-
     /**
      * Gets the number of non-completed bookings that are awaiting a driver from dispatch
      *
@@ -137,9 +125,9 @@ public class NuberDispatch
         }
         return bookingCount;
     }
-
     /**
-     * Populates the regions map with regions
+     * Populates the regions map with regions from the regionInfo map.
+     * @param regionInfo The map of regionName: String & booking limit: Integer.
      */
     private void addRegions(Map<String,Integer> regionInfo)
     {
@@ -153,8 +141,6 @@ public class NuberDispatch
             regions.put(key,region);
         }
     }
-
-
     /**
      * Tells all regions to finish existing bookings already allocated, and stop accepting new bookings
      */

@@ -9,12 +9,10 @@ public class AssignmentDriver {
 
         //turn this or off to enable/disable output from the dispatch's logEvent function
         //use the logEvent function to print out debug output when required.
-        boolean logEvents = false;
+        boolean logEvents = true;
 
         HashMap<String, Integer> testRegions = new HashMap<String, Integer>();
         testRegions.put("Test Region", 50);
-
-
 
         /**
          * This driver has a number of different sections that you can uncomment as you progress through the assignment
@@ -33,7 +31,7 @@ public class AssignmentDriver {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        System.out.println("Creating Nuber Dispatch");
         //test creating a dispatch object
         NuberDispatch dispatch = new NuberDispatch(testRegions, logEvents);
 
@@ -53,14 +51,17 @@ public class AssignmentDriver {
 
         //create NuberDispatch for given regions and max simultaneous jobs per region
         //once you have the above running, you should be able to uncomment the Simulations below to start to put everything together
-
+        System.out.println("Creating 2 regions");
         HashMap<String, Integer> regions = new HashMap<String, Integer>();
+        System.out.println("Creating regions for North");
         regions.put("North", 50);
+        System.out.println("Creating regions for South");
         regions.put("South", 50);
+        System.out.println("Done creating 2 regions");
 
         //new Simulation(regions, 1, 2, 1000, logEvents);
         //new Simulation(regions, 1, 10, 1000, logEvents);
-        new Simulation(regions, 5, 10, 1000, logEvents);
+        //new Simulation(regions, 5, 10, 1000, logEvents);
         //new Simulation(regions, 10, 10, 1000, logEvents);
         //new Simulation(regions, 10, 100, 1000, logEvents);
         //new Simulation(regions, 1, 50, 1000, logEvents);

@@ -22,11 +22,21 @@ import java.util.concurrent.Callable;
  */
 public class Booking implements Callable<BookingResult>
 {
+    /**
+     * Referernce to the central dispatch
+     */
     private NuberDispatch dispatch;
+    /**
+     * Our passenger
+     */
     private Passenger passenger;
-
+    /**
+     * our driver
+     */
     private Driver driver;
-
+    /**
+     * our booking Id
+     */
     private int bookingID;
     private static int bookingInstances = 1;
     /**
@@ -71,7 +81,7 @@ public class Booking implements Callable<BookingResult>
         dispatch.logEvent(this,"Collected passenger, on way to destination.");
         driver.driveToDestination();
         dispatch.logEvent(this,"at destination driver is now free.");
-        boolean bool = dispatch.addDriver(driver);
+        dispatch.addDriver(driver);
 
         return new BookingResult(bookingID,passenger,driver,1000);
     }

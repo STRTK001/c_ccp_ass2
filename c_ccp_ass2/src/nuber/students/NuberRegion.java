@@ -18,20 +18,31 @@ import java.util.concurrent.*;
  */
 public class NuberRegion
 {
-
+    /**
+     * reference to the central dispatch
+     */
     private NuberDispatch dispatch;
-
+    /**
+     * Name of this region
+     */
     private String regionName;
-
     private int maxSimultaneousJobs;
-
+    /**
+     * our threadpool to execute our tasks concurrently
+     */
     private ExecutorService threadPool;
-
-    private ArrayBlockingQueue<Runnable> bookingsQueue;
-
-    private final int CORE_SIZE = 5;
-    private final int LIFETIME = 1;
-
+    /**
+     * The queue to hold the tasks for the threadpool to execute
+     */
+    private BlockingQueue<Runnable> bookingsQueue;
+    /**
+     * The amount of threads that the threadpool will instantiate initially.
+     */
+    private final int CORE_SIZE = 3;
+    /**
+     * The life time of an idle thread in seconds
+     */
+    private final int LIFETIME = 5;
     /**
      * Creates a new Nuber region
      *
@@ -52,7 +63,6 @@ public class NuberRegion
                 TimeUnit.SECONDS,
                 bookingsQueue);
     }
-
     /**
      * Creates a booking for given passenger, and adds the booking to the
      * collection of jobs to process. Once the region has a position available, and a driver is available,
@@ -75,14 +85,12 @@ public class NuberRegion
             return null;
         }
     }
-
     /**
      * Getter method for retrieving the number of bookings waiting in queue.
      *
      * @return bookingQueue.Size()
      */
     public int getBookingQueueLength(){return bookingsQueue.size();}
-
     /**
      * Called by dispatch to tell the region to complete its existing bookings and stop accepting any new bookings
      */

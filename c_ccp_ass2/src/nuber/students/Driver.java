@@ -9,7 +9,7 @@ public class Driver extends Person
     /**
      * The current passenger
      */
-    public Passenger myPassenger;
+    private Passenger myPassenger;
 
     public Driver(String driverName, int maxSleep)
     {

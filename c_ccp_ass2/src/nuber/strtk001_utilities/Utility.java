@@ -16,7 +16,6 @@ public class Utility
         {
             //using thread local random to reduce overhead instead of java.utils.random or whatever it is.
             int sleepTime = ThreadLocalRandom.current().nextInt(maxSleep);
-            //System.out.println("Sleeping for " + sleepTime + " milli seconds");
             Thread.sleep(Duration.ofMillis(maxSleep));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
