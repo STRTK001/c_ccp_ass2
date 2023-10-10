@@ -29,8 +29,8 @@ public class NuberRegion
 
     private ArrayBlockingQueue<Runnable> bookingsQueue;
 
-    private final int CORE_SIZE = 0;
-    private final int LIFETIME = 10;
+    private final int CORE_SIZE = 5;
+    private final int LIFETIME = 1;
 
     /**
      * Creates a new Nuber region
@@ -70,9 +70,8 @@ public class NuberRegion
         {
             Booking booking = new Booking(dispatch,waitingPassenger);
             return threadPool.submit(booking);
-        }catch (Exception e)
+        }catch (RejectedExecutionException e)
         {
-            System.out.println(" somethings gone to shit here "+ e + System.nanoTime());
             return null;
         }
     }

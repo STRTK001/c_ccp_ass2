@@ -24,12 +24,12 @@ public class NuberDispatch
     /**
      * The Queue of idle drivers
      */
-    BlockingQueue<Driver> idleDrivers = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
+    public BlockingQueue<Driver> idleDrivers = new ArrayBlockingQueue<Driver>(MAX_DRIVERS);
 
     /**
      * Map to store reference to all regions so we can shut them down later.
      */
-    Map<String,NuberRegion> regions = new HashMap<String,NuberRegion>();
+    public Map<String,NuberRegion> regions = new HashMap<String,NuberRegion>();
 
     /**
      * Creates a new dispatch objects and instantiates the required regions and any other objects required.
@@ -54,12 +54,17 @@ public class NuberDispatch
      */
     public synchronized boolean addDriver(Driver newDriver)
     {
-        try {
-            idleDrivers.put(newDriver);
-            return true;
-        } catch (InterruptedException e) {
-            return false;
+        while(idleDrivers.size() >= MAX_DRIVERS)
+        {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                return false;
+            }
         }
+        idleDrivers.add(newDriver);
+        notifyAll();
+        return true;
     }
 
     /**
@@ -71,11 +76,16 @@ public class NuberDispatch
      */
     public synchronized Driver getDriver()
     {
-        try {
-            return  idleDrivers.take();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        while(idleDrivers.size() == 0)
+        {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+        notifyAll();
+        return idleDrivers.poll();
     }
 
     /**
@@ -105,12 +115,9 @@ public class NuberDispatch
      * @param region The region to book them into
      * @return returns a Future<BookingResult> object
      */
-    public Future<BookingResult> bookPassenger(Passenger passenger, String region) throws ExecutionException, InterruptedException {
-        if(!regions.containsKey(region))
-        {
-            return null;
-        }
-        System.out.println("Dispatch Booking Passenger: " +  passenger.name +" at " + System.nanoTime());
+    public Future<BookingResult> bookPassenger(Passenger passenger, String region)
+            throws ExecutionException, InterruptedException
+    {
         return regions.get(region).bookPassenger(passenger);
     }
 
@@ -142,7 +149,6 @@ public class NuberDispatch
             {
                 continue;
             }
-            System.out.println("ADDED REGION: <" + key +"> with max bookings of " + regionInfo.get(key)+" at: " + System.nanoTime());
             NuberRegion region = new NuberRegion(this,key,regionInfo.get(key));
             regions.put(key,region);
         }
@@ -154,10 +160,8 @@ public class NuberDispatch
      */
     public void shutdown()
     {
-        System.out.println("****  Initating shutdown at: " + System.nanoTime());
         for(String key : regions.keySet())
         {
-            System.out.println("SHUTTINGDOWN: " + key + " at " + System.nanoTime());
             regions.get(key).shutdown();
         }
     }

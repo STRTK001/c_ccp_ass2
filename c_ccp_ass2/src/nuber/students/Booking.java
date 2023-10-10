@@ -44,7 +44,6 @@ public class Booking implements Callable<BookingResult>
         driver = null;
         bookingID = bookingInstances;
         bookingInstances++;
-        System.out.println(this.toString() + ": has been created at " + System.nanoTime());
     }
 
     /**
@@ -65,15 +64,15 @@ public class Booking implements Callable<BookingResult>
      */
     public BookingResult call()
     {
-        System.out.println(this.toString() + ": Requesting driver at: " + System.nanoTime());
+        dispatch.logEvent(this,"Started Booking, getting driver.");
         driver = dispatch.getDriver();
-        System.out.println(this.toString() + ": should have driver now. at: " + System.nanoTime());
+        dispatch.logEvent(this,"Starting, on way to passenger.");
         driver.pickUpPassenger(passenger);
-        System.out.println(this.toString() + ": should have picked up the passenger now at: " + System.nanoTime());
+        dispatch.logEvent(this,"Collected passenger, on way to destination.");
         driver.driveToDestination();
-        System.out.println(this.toString() + ": should have dropped off the passenger now at: " + System.nanoTime());
-        dispatch.addDriver(driver);
-        System.out.println(this.toString() + ": driver now has returned at: " + System.nanoTime());
+        dispatch.logEvent(this,"at destination driver is now free.");
+        boolean bool = dispatch.addDriver(driver);
+
         return new BookingResult(bookingID,passenger,driver,1000);
     }
 

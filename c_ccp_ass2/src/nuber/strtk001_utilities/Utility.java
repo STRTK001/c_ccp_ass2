@@ -1,5 +1,7 @@
 package nuber.strtk001_utilities;
 
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utility
@@ -14,7 +16,8 @@ public class Utility
         {
             //using thread local random to reduce overhead instead of java.utils.random or whatever it is.
             int sleepTime = ThreadLocalRandom.current().nextInt(maxSleep);
-            Thread.sleep(sleepTime);
+            //System.out.println("Sleeping for " + sleepTime + " milli seconds");
+            Thread.sleep(Duration.ofMillis(maxSleep));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
