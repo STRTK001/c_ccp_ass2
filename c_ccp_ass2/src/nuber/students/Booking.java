@@ -1,5 +1,7 @@
 package nuber.students;
 
+import java.util.concurrent.Callable;
+
 /**
  *
  * Booking represents the overall "job" for a passenger getting to their destination.
@@ -18,9 +20,15 @@ package nuber.students;
  * @author james
  *
  */
-public class Booking {
+public class Booking implements Callable<BookingResult>
+{
+    private NuberDispatch dispatch;
+    private Passenger passenger;
 
+    private Driver driver;
 
+    private int bookingID;
+    private static int bookingInstances = 1;
     /**
      * Creates a new booking for a given Nuber dispatch and passenger, noting that no
      * driver is provided as it will depend on whether one is available when the region
@@ -31,6 +39,11 @@ public class Booking {
      */
     public Booking(NuberDispatch dispatch, Passenger passenger)
     {
+        this.dispatch = dispatch;
+        this.passenger = passenger;
+        driver = null;
+        bookingID = bookingInstances;
+        bookingInstances++;
     }
 
     /**
@@ -51,7 +64,16 @@ public class Booking {
      */
     public BookingResult call()
     {
-        return null;
+        dispatch.logEvent(this,"Started Booking, getting driver.");
+        driver = dispatch.getDriver();
+        dispatch.logEvent(this,"Starting, on way to passenger.");
+        driver.pickUpPassenger(passenger);
+        dispatch.logEvent(this,"Collected passenger, on way to destination.");
+        driver.driveToDestination();
+        dispatch.logEvent(this,"at destination driver is now free.");
+        boolean bool = dispatch.addDriver(driver);
+
+        return new BookingResult(bookingID,passenger,driver,1000);
     }
 
     /***
@@ -67,7 +89,12 @@ public class Booking {
     @Override
     public String toString()
     {
-        return null;
+        String driverName = "null", passengerName = "null";
+        if(driver != null)
+            driverName = driver.name;
+        if(passenger != null)
+            passengerName = passenger.name;
+        return String.format("%d:%s:%s",bookingID,driverName,passengerName);
     }
 
 }

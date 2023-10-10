@@ -1,6 +1,6 @@
 package nuber.students;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * A single Nuber region that operates independently of other regions, other than getting
@@ -16,8 +16,21 @@ import java.util.concurrent.Future;
  * @author james
  *
  */
-public class NuberRegion {
+public class NuberRegion
+{
 
+    private NuberDispatch dispatch;
+
+    private String regionName;
+
+    private int maxSimultaneousJobs;
+
+    private ExecutorService threadPool;
+
+    private ArrayBlockingQueue<Runnable> bookingsQueue;
+
+    private final int CORE_SIZE = 5;
+    private final int LIFETIME = 1;
 
     /**
      * Creates a new Nuber region
@@ -28,8 +41,16 @@ public class NuberRegion {
      */
     public NuberRegion(NuberDispatch dispatch, String regionName, int maxSimultaneousJobs)
     {
-
-
+        this.dispatch = dispatch;
+        this.regionName = regionName;
+        this.maxSimultaneousJobs = maxSimultaneousJobs;
+        bookingsQueue = new ArrayBlockingQueue<Runnable>(maxSimultaneousJobs);
+        threadPool = new ThreadPoolExecutor(
+                CORE_SIZE,
+                maxSimultaneousJobs,
+                LIFETIME,
+                TimeUnit.SECONDS,
+                bookingsQueue);
     }
 
     /**
@@ -45,14 +66,29 @@ public class NuberRegion {
      */
     public Future<BookingResult> bookPassenger(Passenger waitingPassenger)
     {
-        return null;
+        try
+        {
+            Booking booking = new Booking(dispatch,waitingPassenger);
+            return threadPool.submit(booking);
+        }catch (RejectedExecutionException e)
+        {
+            return null;
+        }
     }
+
+    /**
+     * Getter method for retrieving the number of bookings waiting in queue.
+     *
+     * @return bookingQueue.Size()
+     */
+    public int getBookingQueueLength(){return bookingsQueue.size();}
 
     /**
      * Called by dispatch to tell the region to complete its existing bookings and stop accepting any new bookings
      */
     public void shutdown()
     {
+        threadPool.shutdown();
     }
 
 }

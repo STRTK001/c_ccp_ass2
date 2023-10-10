@@ -83,7 +83,7 @@ public class Simulation {
             }
 
             //print status update
-            System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver());
+            System.out.println("Active bookings: " + bookings.size()+", pending: "+dispatch.getBookingsAwaitingDriver() + " at " + System.nanoTime());
 
             //sleep for 1s and then print out the current bookings
             try {
